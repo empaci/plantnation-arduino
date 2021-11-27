@@ -3,6 +3,12 @@ This sketch runs on an Arduino connected to an ATtiny85/45 running ThreeSensors_
 The data received is HC-SR04 PING sensor data in centimeters
 */
 
+/*
+  TODO LIST
+    Add wifi communication with the app
+    Change the way the data from microcontroller are received
+    Add functionality to work with n microcontrollers 
+*/
 
 #include <Wire.h>
 

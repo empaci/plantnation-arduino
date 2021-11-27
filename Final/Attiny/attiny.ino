@@ -1,6 +1,13 @@
 /*
 This sketch runs on an ATtiny85 connected to an Arduino Uno running a receiver sketch
 */
+/*
+  TODO LIST
+    Add sleep function to read sensor every X minutes
+    Add function to read ligth sensor
+    Make sure to send 32 bit of data OR use another library to send more
+  
+*/
 
 #include <TinyWireS.h>       // Requires fork by Rambo with onRequest support
 #include <avr/wdt.h>         // watchdog

@@ -1,23 +1,13 @@
 /*
-This sketch runs on an Arduino connected to an ATtiny85/45 running ThreeSensors_Tiny.ino
-The data received is HC-SR04 PING sensor data in centimeters
-*/
-
-/*
-  TODO LIST
-    Add wifi communication with the app
-    Change the way the data from microcontroller are received
-    Add functionality to work with n microcontrollers 
+  TEST run the system with only 1 sensor  
 */
 
 #include <Wire.h>
 
-int place;
-byte dist[3];
+byte temp;
 long entryP = 0;
 
-const int I2CSlaveAddress = 8;      // I2C Address.
-
+const int I2CSlaveAddress = 6;      // I2C Address.
 
 void setup()
 {
@@ -26,21 +16,14 @@ void setup()
   Serial.println("Setup");
 }
 
-
-
 void loop()
 {
   Serial.print("L");
   while (readTiny(I2CSlaveAddress) < 255) {
     Serial.print("WT"); // wait for first byte
   }
-  for (place = 0; place < 3; place++) {
-    dist[place] = readTiny(I2CSlaveAddress);
-  }
-  for (int i = 0; i < 3; i++) {
-    Serial.print(dist[i]);
-    Serial.print(" ");
-  }
+  temp = readTiny(I2CSlaveAddress);
+  Serial.print(temp);
   Serial.println();
   delay(200);
 }

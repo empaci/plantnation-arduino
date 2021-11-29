@@ -7,7 +7,8 @@ The data received is HC-SR04 PING sensor data in centimeters
   TODO LIST
     Add wifi communication with the app
     Change the way the data from microcontroller are received
-    Add functionality to work with n microcontrollers 
+    Add functionality to work with n microcontrollers
+    Add system to records data sensors (example every 5 reads take the average and save it a file)
 */
 
 #include <Wire.h>
@@ -16,7 +17,7 @@ int place;
 byte dist[3];
 long entryP = 0;
 
-const int I2CSlaveAddress = 8;      // I2C Address.
+const int I2CSlaveAddress = 5;      // I2C Address.
 
 
 void setup()

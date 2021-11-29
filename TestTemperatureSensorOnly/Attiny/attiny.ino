@@ -54,7 +54,7 @@ void readData()
 }
 
 int readTemperature(pin) {
-  return dht.readTemperature();
+  return (int)dht.readTemperature(); //returns a float sp we have to cast it to int
   //int chk = DHT.read11(pin);
   //return DHT.temperature;
 }

@@ -43,7 +43,7 @@ void loop()
     Serial.print(" ");
   }
   Serial.println();
-  delay(200);
+  delay(300000);
 }
 
 byte readTiny(int address) {

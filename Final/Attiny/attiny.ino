@@ -81,7 +81,7 @@ void readData()
   tws_delay(20);
   data[SOIL_HUMIDITY] = readSoilHumidity(PIN_SOIL_HUMIDITY);
   tws_delay(20);
-  data[LIGHT] = readLight(PIN_LIGHT);
+  data[LIGHT] = readLight(PIN_LIGHT_1,PIN_LIGHT_2);
   tws_delay(20);
 }
 

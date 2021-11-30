@@ -46,6 +46,7 @@ void setup()
 
 void loop()
 {
+  delay(300000) // 5 minuts in miliseconds 
   readData();
   tws_delay(1000);
   //wdt_reset();                          // feed the watchdog

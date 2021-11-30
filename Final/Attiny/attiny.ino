@@ -18,7 +18,8 @@ This sketch runs on an ATtiny85 connected to an Arduino Uno running a receiver s
 #define LIGHT 2
 
 // pin to connect the sensors 
-#define PIN_LIGHT PB1
+#define PIN_LIGHT_1 PB1
+#define PIN_LIGHT_2 PB2
 #define PIN_SOIL_HUMIDITY PB3
 #define PIN_TEMPERATURE PB4
 
@@ -94,7 +95,9 @@ int readSoilHumidity(pin) {
   return (int)soilMoiturePercentage;
 }
 
-int readLight(pin) {
-  lightValue = analogRead(pin) >> 2;
-  return (int)lightValue;
+int readLight(pin1, pin2) { //we are using two lightsensor
+  lightValue_1 = analogRead(pin1) >> 2;
+  lightValue_2 = analogRead(pin2) >> 2;
+  if(lightValue_1 < lightValue_2){return (int)lightValue_2;}
+  else{return (int)lightValue_1;}
 }

@@ -4,6 +4,13 @@ The data received is HC-SR04 PING sensor data in centimeters
 */
 
 /*
+The information should be sendt as follow:
+  light: each hour we send how many minuts the plant have goten light . 
+  moist: send the average of moist from the last three reading (15 min) each hour.
+  temprature: send the average temprature from the last three reading (15 min) each hour, and the average from the last 12 hours.
+*/
+
+/*
   TODO LIST
     Add wifi communication with the app
     Change the way the data from microcontroller are received

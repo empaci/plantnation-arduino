@@ -91,7 +91,7 @@ int readTemperature() {
 }
 
 int readSoilHumidity(pin) {
-  soilMoistureValue = analogRead(pin) >> 2; // since it is 10 bit we shift the last 2 digits
+  soilMoistureValue = analogRead(pin) >> 2; // since it is 10 bit we shift the last 2 digits (equivalent to dividing by 4)
   soilMoisturePercentage = map(soilMoistureValue, AIR_VALUE, WATER_VALUE, 0, 100);
   return (int)soilMoiturePercentage;
 }

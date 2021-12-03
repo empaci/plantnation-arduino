@@ -6,26 +6,25 @@
 #include <WiFiNINA.h>
 #include<DHT.h>
 
+#define PIN_LIGHT 3
 #define DHTPIN 2 // A2 on arduino mkr 1010
 #define DHTTYPE DHT11 
  
 DHT dht(DHTPIN, DHTTYPE);
 
-const char* ssid = "";    // wifi network
-const char* password = "";     // wifi pasword 
+const char* ssid = "AndroidAP";    // wifi network
+const char* password = "uxnk1607aA";     // wifi pasword 
 const char* host = "script.google.com";
 const int httpsPort = 443;
 const int httpPort = 80;
 
 // Use WiFiSSLClient
 WiFiSSLClient client;
-// SHA1 fingerprint of the certificate, don't care with your GAS service
-//const char* fingerprint = "46 B2 C3 44 9C 59 09 8B 01 B6 F8 BD 4C FB 00 74 91 2F EF F6";
-String GAS_ID = "AKfycbwEDnw4kalWVDqxJqxfBWVClaedfJ4NlNVwYW6HvJJB65a59jdHwd";   // GAS service id
+String GAS_ID = "AKfycbwEDnw4kalWVDqxJqxfBWVClaedfJ4NlNVwYW6HvJJB65a59jdH";   // GAS service id
 
 void setup() {
+  Serial.begin(9600); //Serial
   dht.begin();  // sensor
-  Serial.begin(115200); //Serial
   Serial.println();
 
   //connecting to internet
@@ -44,21 +43,25 @@ void setup() {
 
 
 void loop() {
-  int h = 1; //(int)dht.readHumidity();
-  int t = 4; //(int)dht.readTemperature();
+  int h = (int)dht.readHumidity();
+  int t = (int)dht.readTemperature();
+  int l = readLight();
   Serial.print("Temp = ");
   Serial.print(t);
   Serial.print(" HUM= ");
-  Serial.println(h);
-  sendData(t, h);
+  Serial.print(h);
+  Serial.print(" LIGHT= ");
+  Serial.println(l);
+  Serial.println();
+  sendData(t, h, l);
 
-  //client.flush(); 
+  client.flush(); 
  
   delay(2000);
 }
 
 // Function for Send data into Google Spreadsheet
-void sendData(int tem, int hum) {
+void sendData(int tem, int hum, int light) {
   Serial.print("connecting to ");
   Serial.println(host);
   if (!client.connect(host, httpsPort)) {
@@ -66,21 +69,16 @@ void sendData(int tem, int hum) {
     return;
   }
 
-  /*if (client.verify(fingerprint, host)) {
-  Serial.println("certificate matches");
-  } else {
-  Serial.println("certificate doesn't match");
-  }
-  */
   String string_temperature =  String(tem, DEC); 
   String string_humidity =  String(hum, DEC); 
-  String url = "/macros/s/" + GAS_ID + "/exec?temperature=" + string_temperature + "&humidity=" + string_humidity;
+  String string_light =  String(light, DEC);
+  String url = "/macros/s/" + GAS_ID + "/exec?temperature=" + string_temperature + "&humidity=" + string_humidity + "&light=" + string_light;
   Serial.print("requesting URL: ");
   Serial.println(url);
 
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
          "Host: " + host + "\r\n" +
-         "User-Agent: BuildFailureDetectorESP8266\r\n" +
+         "User-Agent: ESP8266\r\n" +
          "Connection: close\r\n\r\n");
 
   Serial.println("request sent");
@@ -102,5 +100,10 @@ void sendData(int tem, int hum) {
   Serial.println(line);
   Serial.println("==========");
   Serial.println("closing connection");
-  //client.stop();
+  client.stop();
 } 
+
+int readLight() {
+  int lightValue = (int) analogRead(PIN_LIGHT);
+  return lightValue;
+}

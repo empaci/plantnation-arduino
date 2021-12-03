@@ -5,12 +5,11 @@ This sketch runs on an ATtiny85 connected to an Arduino Uno running a receiver s
   TODO LIST
     Add sleep function to read sensor every X minutes
     Make sure to send 32 bit of data OR use another library to send more
-  
 */
 
 #include <TinyWireS.h>       // Requires fork by Rambo with onRequest support
 // #include <avr/wdt.h>         // watchdog
-#include <dht.h>       // dht library to read the temperature and air humidity
+#include "DHT.h"       // dht library to read the temperature and air humidity
 
 // data positions in the array
 #define TEMPERATURE 0
@@ -19,7 +18,7 @@ This sketch runs on an ATtiny85 connected to an Arduino Uno running a receiver s
 
 // pin to connect the sensors 
 #define PIN_LIGHT_1 PB1
-#define PIN_LIGHT_2 PB2
+//#define PIN_LIGHT_2 PB2
 #define PIN_SOIL_HUMIDITY PB3
 #define PIN_TEMPERATURE PB4
 
@@ -46,9 +45,8 @@ void setup()
 
 void loop()
 {
-  delay(300000) // 5 minuts in miliseconds 
+  tws_delay(300000) // 5 minuts in miliseconds 
   readData();
-  tws_delay(1000);
   //wdt_reset();                          // feed the watchdog
 }
 
@@ -82,23 +80,28 @@ void readData()
   tws_delay(20);
   data[SOIL_HUMIDITY] = readSoilHumidity(PIN_SOIL_HUMIDITY);
   tws_delay(20);
-  data[LIGHT] = readLight(PIN_LIGHT_1,PIN_LIGHT_2);
+  data[LIGHT] = readLight(PIN_LIGHT_1) //,PIN_LIGHT_2);
   tws_delay(20);
 }
 
 int readTemperature() {
-  return (int)dht.readTemperature();
+  return (int)dht.readTemperature() >> 2;
 }
 
-int readSoilHumidity(pin) {
-  soilMoistureValue = analogRead(pin) >> 2; // since it is 10 bit we shift the last 2 digits (equivalent to dividing by 4)
-  soilMoisturePercentage = map(soilMoistureValue, AIR_VALUE, WATER_VALUE, 0, 100);
-  return (int)soilMoiturePercentage;
+int readSoilHumidity(int pin) {
+  int soilMoistureValue = (int)analogRead(pin) >> 2; // since it is 10 bit we shift the last 2 digits (equivalent to dividing by 4)
+  int soilMoisturePercentage = map(soilMoistureValue, AIR_VALUE, WATER_VALUE, 0, 100);
+  return soilMoiturePercentage;
 }
 
-int readLight(pin1, pin2) { //we are using two lightsensor
-  lightValue_1 = analogRead(pin1) >> 2;
-  lightValue_2 = analogRead(pin2) >> 2;
-  if(lightValue_1 < lightValue_2){return (int)lightValue_2;}
-  else{return (int)lightValue_1;}
+int readLight(int pin1, int pin2) { //we are using two lightsensor
+  int lightValue_1 = (int)analogRead(pin1) >> 2;
+  int lightValue_2 = (int)analogRead(pin2) >> 2;
+  int max_light = lightValue_1 > lightValue_2? lightValue_1 : lightValue_2;
+  return max_light;
+}
+
+int readLight(int pin) { //one sensor option
+  int lightValue = (int) analogRead(pin) >> 2;
+  return lightValue;
 }

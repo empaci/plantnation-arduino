@@ -67,7 +67,9 @@ void loop()
   }
   Serial.println();
 
-  sendData(dist[0], dist[1], dist[2], I2CSlaveAddress);
+  //convert data (byte) into a int
+
+  sendData(data[0], data[1], data[2], I2CSlaveAddress);
   client.flush(); 
   
   delay(300000);

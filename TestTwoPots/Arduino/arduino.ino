@@ -74,7 +74,7 @@ void loop()
   Serial.println();
 
   for (int i = 0; i < n_pots; i++) {
-    sendData(dist[0][i], dist[1][i], dist[2][i], I2CSlaveAddress[i]);
+    sendData(data[0][i], data[1][i], data[2][i], I2CSlaveAddress[i]);
   }
   client.flush(); 
   

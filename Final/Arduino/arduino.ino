@@ -18,7 +18,14 @@ The information should be sendt as follow:
 #include <Wire.h>
 
 int place;
-byte data[3][2];
+byte data[3][3][2];
+
+//averages of the value for each pot
+int avg_temp[2];
+int avg_soil[2];
+int avg_light[2]; 
+
+int n_readings = 0;
 
 int n_pots = 2;
 int I2CSlaveAddress[2] = {5, 6};      // I2C Address.
@@ -61,9 +68,10 @@ void loop()
   }
   for (int i = 0; i < n_pots; i++) {
     for (int j = 0; j < 3; i++) {
-      data[j][i] = readTiny(I2CSlaveAddress[i]); // what happen when we read an address that doesn't exist? could we use this to give the "sensation" of adding a new pot?
+      data[j][n_readings][i] = readTiny(I2CSlaveAddress[i]); // what happen when we read an address that doesn't exist? could we use this to give the "sensation" of adding a new pot?
     }
   }
+  n_reading += 1;
   for (int h = 0; h < n_pots; h++) {
     for (int k = 0; k< 3; k++) {
       Serial.print(data[k][h]);
@@ -72,9 +80,19 @@ void loop()
     Serial.println();
   }
   Serial.println();
-
-  for (int i = 0; i < n_pots; i++) {
-    sendData(dist[0][i], dist[1][i], dist[2][i], I2CSlaveAddress[i]);
+  if (n_readings >= 3) {
+    //calcolate the average
+    for (int j=0; j < n_readings; j++) {
+      for (int i = 0; i < n_pots; i++) {
+        avg_temp[i] = 
+        avg_hum[i] =
+        avg_light[i] =
+      }
+    }
+    for (int i = 0; i < n_pots; i++) {
+        sendData(avg_soil[i], avg_hum[i], avg_light[i], I2CSlaveAddress[i]);
+    }
+    n_readings = 0;
   }
   client.flush(); 
   

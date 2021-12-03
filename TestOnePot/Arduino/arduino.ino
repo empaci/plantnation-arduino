@@ -18,10 +18,9 @@ The information should be sendt as follow:
 #include <Wire.h>
 
 int place;
-byte data[3][2];
+byte data[3];
 
-int n_pots = 2;
-int I2CSlaveAddress[2] = {5, 6};      // I2C Address.
+const int I2CSlaveAddress = 5;      // I2C Address.
 
 // to store the date in the cloud
 const char* ssid = "";    // wifi network
@@ -59,23 +58,16 @@ void loop()
   while (readTiny(I2CSlaveAddress) < 255) {
     Serial.print("WT"); // wait for first byte
   }
-  for (int i = 0; i < n_pots; i++) {
-    for (int j = 0; j < 3; i++) {
-      data[j][i] = readTiny(I2CSlaveAddress[i]); // what happen when we read an address that doesn't exist? could we use this to give the "sensation" of adding a new pot?
-    }
+  for (int i = 0; i < 3; i++) {
+    data[i] = readTiny(I2CSlaveAddress);
   }
-  for (int h = 0; h < n_pots; h++) {
-    for (int k = 0; k< 3; k++) {
-      Serial.print(data[k][h]);
-      Serial.print(" ");
-    }
-    Serial.println();
+  for (int j = 0; j < 3; j++) {
+    Serial.print(data[j]);
+    Serial.print(" ");
   }
   Serial.println();
 
-  for (int i = 0; i < n_pots; i++) {
-    sendData(dist[0][i], dist[1][i], dist[2][i], I2CSlaveAddress[i]);
-  }
+  sendData(dist[0], dist[1], dist[2], I2CSlaveAddress);
   client.flush(); 
   
   delay(300000);

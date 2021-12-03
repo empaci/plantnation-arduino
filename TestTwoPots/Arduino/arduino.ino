@@ -61,7 +61,7 @@ void loop()
   }
   for (int i = 0; i < n_pots; i++) {
     for (int j = 0; j < 3; i++) {
-      data[j][i] = readTiny(I2CSlaveAddress[i]); // what happen when we read an address that doesn't exist? could we use this to give the "sensation" of adding a new pot?
+      data[j][i] = readTiny(I2CSlaveAddress[i]);
     }
   }
   for (int h = 0; h < n_pots; h++) {

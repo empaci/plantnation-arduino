@@ -14,7 +14,7 @@ DHT dht(PIN_TEMPERATURE, DHTTYPE);
 const int I2CSlaveAddress = 6;      // I2C Address, between 5-119.
 
 int temp;
-int data;
+int data[3];
 int place = 0;
 
 void setup()
@@ -40,7 +40,7 @@ void transmit()
       hh = 255;                       // start byte (header)
       break;
     case 1:
-      hh = data;          // Send last recorded value for current sensor
+      hh = data[TEMPERATURE];          // Send last recorded value for current sensor
       break;
   }
   TinyWireS.send(hh);
@@ -50,7 +50,7 @@ void transmit()
 
 void readData()
 {
-  data = readTemp();
+  data[TEMPERATURE] = readTemp();
 }
 
 int readTemp() {

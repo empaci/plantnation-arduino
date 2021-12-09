@@ -1,15 +1,12 @@
 /*
-This sketch runs on an ATtiny85 connected to an Arduino Uno running a receiver sketch
-*/
-/*
   TODO LIST
     Add sleep function to read sensor every X minutes
     Make sure to send 32 bit of data OR use another library to send more
 */
 
 #include <TinyWireS.h>       // Requires fork by Rambo with onRequest support
-// #include <avr/wdt.h>         // watchdog
-#include "DHT.h"       // dht library to read the temperature and air humidity
+//#include <DHT.h>       // dht library to read the temperature and air humidity
+#include <TinyDHT.h>
 
 // data positions in the array
 #define TEMPERATURE 0
@@ -19,35 +16,33 @@ This sketch runs on an ATtiny85 connected to an Arduino Uno running a receiver s
 // pin to connect the sensors 
 #define PIN_LIGHT_1 PB1
 //#define PIN_LIGHT_2 PB2
-#define PIN_SOIL_HUMIDITY PB3
-#define PIN_TEMPERATURE PB4
+#define PIN_SOIL_HUMIDITY PB4
+#define PIN_TEMPERATURE PA3
 
 // variable for the temperature sensor
 #define DHTTYPE DHT11
-DHT dht(PIN_TEMPERATURE, DHTTYPE);
 
 // variable for the soilsensor
-const int AIR_VALUE 620
-const int WATER_VALUE 310
+const int AIR_VALUE = 620;
+const int WATER_VALUE = 310;
 
-const int I2CSlaveAddress = 5;      // I2C Address, between 5-119.
+const int I2CSlaveAddress = 6;      // I2C Address, between 5-119.
+
+DHT dht(PIN_TEMPERATURE, DHTTYPE);
 
 int data[3];                    // Where the Data is stored (8 bit unsigned)
 int place = 0;
-unsigned long start;
 
 void setup()
 {
   TinyWireS.begin(I2CSlaveAddress);      // Begin I2C Communication
   TinyWireS.onRequest(transmit);         // When requested, call function transmit()
-  // wdt_enable(WDTO_500MS);               // Watchdog
 }
 
 void loop()
 {
-  tws_delay(300000) // 5 minutes in miliseconds 
+  //tws_delay(300000) // 5 minutes in miliseconds 
   readData();
-  //wdt_reset();                          // feed the watchdog
 }
 
 //-------------------------------------------------------------------
@@ -76,22 +71,22 @@ void transmit()
 
 void readData()
 {
-  data[TEMPERATURE] = readTemperature();
+  data[TEMPERATURE] = readTemp();
   tws_delay(20);
-  data[SOIL_HUMIDITY] = readSoilHumidity(PIN_SOIL_HUMIDITY);
+  data[SOIL_HUMIDITY] = 10; //readSoilHumidity(PIN_SOIL_HUMIDITY);
   tws_delay(20);
-  data[LIGHT] = readLight(PIN_LIGHT_1) //,PIN_LIGHT_2);
+  data[LIGHT] = 11; //readLight(PIN_LIGHT_1) //,PIN_LIGHT_2);
   tws_delay(20);
 }
 
-int readTemperature() {
+int readTemp() {
   return (int)dht.readTemperature() >> 2;
 }
 
 int readSoilHumidity(int pin) {
   int soilMoistureValue = (int)analogRead(pin) >> 2; // since it is 10 bit we shift the last 2 digits (equivalent to dividing by 4)
   int soilMoisturePercentage = map(soilMoistureValue, AIR_VALUE, WATER_VALUE, 0, 100);
-  return soilMoiturePercentage;
+  return soilMoisturePercentage;
 }
 
 int readLight(int pin1, int pin2) { //we are using two lightsensor

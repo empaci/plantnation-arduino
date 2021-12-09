@@ -24,6 +24,7 @@ This sketch runs on an ATtiny85 connected to an Arduino Uno running a receiver s
 
 // variable for the temperature sensor
 #define DHTTYPE DHT11
+
 DHT dht(PIN_TEMPERATURE, DHTTYPE);
 
 // variable for the soilsensor
@@ -34,20 +35,17 @@ const int I2CSlaveAddress = 5;      // I2C Address, between 5-119.
 
 int data[3];                    // Where the Data is stored (8 bit unsigned)
 int place = 0;
-unsigned long start;
 
 void setup()
 {
   TinyWireS.begin(I2CSlaveAddress);      // Begin I2C Communication
   TinyWireS.onRequest(transmit);         // When requested, call function transmit()
-  // wdt_enable(WDTO_500MS);               // Watchdog
 }
 
 void loop()
 {
-  tws_delay(300000) // 5 minuts in miliseconds 
+  //tws_delay(300000) // 5 minuts in miliseconds 
   readData();
-  //wdt_reset();                          // feed the watchdog
 }
 
 //-------------------------------------------------------------------
@@ -76,7 +74,7 @@ void transmit()
 
 void readData()
 {
-  data[TEMPERATURE] = readTemperature();
+  data[TEMPERATURE] = readTemp();
   tws_delay(20);
   data[SOIL_HUMIDITY] = readSoilHumidity(PIN_SOIL_HUMIDITY);
   tws_delay(20);
@@ -84,7 +82,7 @@ void readData()
   tws_delay(20);
 }
 
-int readTemperature() {
+int readTemp() {
   return (int)dht.readTemperature() >> 2;
 }
 

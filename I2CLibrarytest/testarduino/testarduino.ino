@@ -3,14 +3,17 @@
 
  void setup() 
  {
+     
      Wire.begin();
      Serial.begin(9600);
+     
  }
 
  void loop() 
  {
+      
       byte num;
-
+     
      // read 1 byte, from address 0x26
      Wire.requestFrom(I2C_SLAVE_ADDR, 1);
 

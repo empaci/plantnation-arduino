@@ -18,7 +18,7 @@ The information should be sendt as follow:
 int place;
 byte data[3];
 
-const int I2CSlaveAddress = 6;      // I2C Address.
+const int I2CSlaveAddress = 7;      // I2C Address.
 
 
 void setup()

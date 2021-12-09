@@ -21,11 +21,11 @@ int place;
 byte data[3][2];
 
 int n_pots = 2;
-int I2CSlaveAddress[2] = {5, 6};      // I2C Address.
+int I2CSlaveAddress[2] = {6, 8};      // I2C Address.
 
 // to store the date in the cloud
-const char* ssid = "";    // wifi network
-const char* password = "";     // wifi pasword 
+const char* ssid = "ONEPLUS_co_aphgdz";    // wifi network
+const char* password = "hgdz8309";     // wifi pasword 
 const char* host = "script.google.com";
 const int httpsPort = 443;
 WiFiSSLClient client;
@@ -56,20 +56,24 @@ void setup()
 void loop()
 {
   Serial.print("L");
-  while (readTiny(I2CSlaveAddress) < 255) {
+  while (readTiny(I2CSlaveAddress[0]) < 255) {
     Serial.print("WT"); // wait for first byte
   }
-  for (int i = 0; i < n_pots; i++) {
-    for (int j = 0; j < 3; i++) {
-      data[j][i] = readTiny(I2CSlaveAddress[i]);
-    }
+  for (int j = 0; j < 3; j++) {
+      data[j][0] = readTiny(I2CSlaveAddress[0]);
+  }
+  while (readTiny(I2CSlaveAddress[1]) < 255) {
+    Serial.print("WT"); // wait for first byte
+  }
+  for (int j = 0; j < 3; j++) {
+      data[j][1] = readTiny(I2CSlaveAddress[1]);
   }
   for (int h = 0; h < n_pots; h++) {
     for (int k = 0; k< 3; k++) {
       Serial.print(data[k][h]);
       Serial.print(" ");
     }
-    Serial.println();
+    Serial.println(I2CSlaveAddress[h]);
   }
   Serial.println();
 
@@ -78,7 +82,7 @@ void loop()
   }
   client.flush(); 
   
-  delay(300000);
+  delay(5000);
 }
 
 byte readTiny(int address) {
@@ -101,7 +105,7 @@ void sendData(int tem, int hum, int light, int pot) {
   String string_temperature =  String(tem, DEC); 
   String string_humidity =  String(hum, DEC); 
   String string_light =  String(light, DEC);
-  String url = "/macros/s/" + GAS_ID + "/exec?temperature=" + string_temperature + "&humidity=" + string_humidity + "&light=" + string_light;
+  String url = "/macros/s/" + GAS_ID + "/exec?temperature=" + string_temperature + "&humidity=" + string_humidity + "&light=" + string_light+"&pot="+pot;
   Serial.print("requesting URL: ");
   Serial.println(url);
 

@@ -14,9 +14,9 @@
 #define LIGHT 2
 
 // pin to connect the sensors 
-#define PIN_LIGHT_1 PB1
+#define PIN_LIGHT_1 PA1
 //#define PIN_LIGHT_2 PB2
-#define PIN_SOIL_HUMIDITY PB4
+#define PIN_SOIL_HUMIDITY PA2
 #define PIN_TEMPERATURE PA3
 
 // variable for the temperature sensor
@@ -55,10 +55,10 @@ void transmit()
       hh = 255;                       // start byte (header)
       break;
     case 1:
-      hh = data[TEMPERATURE];          // Send last recorded value for current sensor
+      hh = 11; //data[TEMPERATURE];          // Send last recorded value for current sensor
       break;
     case 2:
-      hh = data[SOIL_HUMIDITY];       // Send last recorded value for current sensor
+      hh = 10; //data[SOIL_HUMIDITY];       // Send last recorded value for current sensor
       break;
     case 3:
       hh = data[LIGHT];       // Send last recorded value for current sensor
@@ -73,9 +73,9 @@ void readData()
 {
   data[TEMPERATURE] = readTemp();
   tws_delay(20);
-  data[SOIL_HUMIDITY] = 10; //readSoilHumidity(PIN_SOIL_HUMIDITY);
+  data[SOIL_HUMIDITY] = readSoilHumidity(PIN_SOIL_HUMIDITY);
   tws_delay(20);
-  data[LIGHT] = 11; //readLight(PIN_LIGHT_1) //,PIN_LIGHT_2);
+  data[LIGHT] = readLight(PIN_LIGHT_1); //,PIN_LIGHT_2);
   tws_delay(20);
 }
 
@@ -85,8 +85,9 @@ int readTemp() {
 
 int readSoilHumidity(int pin) {
   int soilMoistureValue = (int)analogRead(pin) >> 2; // since it is 10 bit we shift the last 2 digits (equivalent to dividing by 4)
-  int soilMoisturePercentage = map(soilMoistureValue, AIR_VALUE, WATER_VALUE, 0, 100);
-  return soilMoisturePercentage;
+  //int soilMoisturePercentage = map(soilMoistureValue, AIR_VALUE, WATER_VALUE, 0, 100);
+  //return soilMoisturePercentage;
+  return soilMoistureValue;
 }
 
 int readLight(int pin1, int pin2) { //we are using two lightsensor

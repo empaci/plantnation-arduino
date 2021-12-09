@@ -5,27 +5,21 @@ The information should be sendt as follow:
   temprature: send the average temprature from the last three reading (15 min) each hour, and the average from the last 12 hours.
 */
 
-/*
-  TODO LIST
-    X Add wifi communication with the app
-    Change the way the data from microcontroller are received
-    Add functionality to work with n microcontrollers
-    Add system to records data sensors (example every 5 reads take the average and save it a file)
-*/
-
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <Wire.h>
 
 int place;
-byte data[3][2];
+byte data[3][4];
+int ok;
 
-int n_pots = 2;
-int I2CSlaveAddress[2] = {6, 8};      // I2C Address.
+int n_pots = 4;
+int n_real_pots = 0;
+int I2CSlaveAddress[4] = {6, 7, 8, 9};      // I2C Address.
 
 // to store the date in the cloud
-const char* ssid = "ONEPLUS_co_aphgdz";    // wifi network
-const char* password = "hgdz8309";     // wifi pasword 
+const char* ssid = "AndroidAP";    // wifi network
+const char* password = "yhahahahaXXX4";     // wifi pasword 
 const char* host = "script.google.com";
 const int httpsPort = 443;
 WiFiSSLClient client;
@@ -56,28 +50,34 @@ void setup()
 void loop()
 {
   Serial.print("L");
-  while (readTiny(I2CSlaveAddress[0]) < 255) {
-    Serial.print("WT"); // wait for first byte
+
+  n_real_pots = 0;
+
+  ok=1;
+  
+  for (int i = 0; i < n_pots; i++) {
+    while (readTiny(I2CSlaveAddress[i], &ok) < 255 ) {
+      Serial.print("WT"); // wait for first byte
+    }
+    if (ok != -1) {
+      for (int j = 0; j < 3; j++) {
+         data[j][i] = readTiny(I2CSlaveAddress[i], &ok);
+      }
+      n_real_pots++;
+    }
   }
-  for (int j = 0; j < 3; j++) {
-      data[j][0] = readTiny(I2CSlaveAddress[0]);
-  }
-  while (readTiny(I2CSlaveAddress[1]) < 255) {
-    Serial.print("WT"); // wait for first byte
-  }
-  for (int j = 0; j < 3; j++) {
-      data[j][1] = readTiny(I2CSlaveAddress[1]);
-  }
-  for (int h = 0; h < n_pots; h++) {
-    for (int k = 0; k< 3; k++) {
+  for (int h = 0; h < n_real_pots; h++) {
+    Serial.print("Pot: ");
+    Serial.print(I2CSlaveAddress[h]);
+    Serial.print("data: ");
+    for (int k = 0; k < 3; k++) {
       Serial.print(data[k][h]);
       Serial.print(" ");
     }
-    Serial.println(I2CSlaveAddress[h]);
   }
   Serial.println();
 
-  for (int i = 0; i < n_pots; i++) {
+  for (int i = 0; i < n_real_pots; i++) {
     sendData(data[0][i], data[1][i], data[2][i], I2CSlaveAddress[i]);
   }
   client.flush(); 
@@ -85,11 +85,19 @@ void loop()
   delay(5000);
 }
 
-byte readTiny(int address) {
+byte readTiny(int address, int* ok) {
   byte hh ;
+  int i = 0;
   long entry = millis();
+  *ok = 1;
   Wire.requestFrom(address, 1);                  // The TinyWire library only allows for one byte to be requested at a time
-  while (Wire.available() == 0 && (millis() - entry) < 100)  Serial.print("W");
+  while (Wire.available() == 0 && (millis() - entry) < 100) {
+    i = i + 1;
+    if (i>1000) {
+      *ok = -1;
+      return 255;
+    }
+  }
   if  (millis() - entry < 100) hh = Wire.read();
   return hh;
 }
@@ -105,6 +113,9 @@ void sendData(int tem, int hum, int light, int pot) {
   String string_temperature =  String(tem, DEC); 
   String string_humidity =  String(hum, DEC); 
   String string_light =  String(light, DEC);
+  
+  pot = pot - 5; // to show the data nicely
+  
   String url = "/macros/s/" + GAS_ID + "/exec?temperature=" + string_temperature + "&humidity=" + string_humidity + "&light=" + string_light+"&pot="+pot;
   Serial.print("requesting URL: ");
   Serial.println(url);
